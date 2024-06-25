@@ -1,0 +1,89 @@
+
+# 数据库（各模型通用配置）
+db_login_info:
+    type: hive
+    host: 192.168.4.30
+    port: 10000
+    user: hive
+    password: JSGDHRAY
+    database: model_result
+    auth: LDAP
+    kerberos_service_name: null
+    keytab_file: null
+    principal: null
+
+# 数据库表（各模型通用配置）
+db_tables:
+    # 输入表
+    input_schema: risk_model
+    register_table: rsk_cdm_kc21        # 就诊结算表
+    prescription_table: rsk_cdm_kc22    # 处方明细表
+    insurant_table: rsk_cdm_psn         # 参保人信息表
+    medins_table: rsk_cdm_medins        # 医药机构表
+    emp_table: rsk_cdm_emp              # 单位信息表
+    doctor_table: rsk_cdm_dctr          # 医护人员目录表
+    diag_table: rsk_cdm_diag            # 诊断信息表
+    icd10_table: rsk_cdm_icd10          # ICD10层级目录表
+    drug_table: rsk_cdm_ka02            # 药品目录表
+    item_table: rsk_cdm_ka03            # 诊疗项目目录表
+    material_table: rsk_cdm_ka04        # 材料目录表
+    opsp_table: rsk_cdm_opsp            # 门慢门特登记信息表
+    
+    # 中间临时表存储数据库
+    temp_schema: model_result
+    # 结果表存储数据库
+    output_schema: model_result
+    
+    # 日志表
+    log_schema: model_result
+    log_table: rsk_model_log       
+        
+
+# 各模型独立参数配置        
+params:
+    # 卡聚集配置
+    rsk_crd_gtr:
+        # 输入表
+        temp_kc21_table: rsk_crd_gtr_kc21
+        temp_kc22_table: rsk_crd_gtr_kc22
+
+        # 结果表
+        # 卡聚集风险组结果表
+        risk_groups_table: rsk_crd_gtr_groups
+        # 卡聚集风险就诊表
+        risk_clinic_table: rsk_crd_gtr_clinic
+        # 卡聚集风险总览表
+        risk_summary_table: rsk_crd_gtr_summary
+        # 卡聚集人群表
+        risk_insurant_table: rsk_crd_gtr_insurant
+        # 卡聚集处方详情表
+        risk_prescription_table: rsk_crd_gtr_prescription
+        # 风险标签输出表
+        risk_label_table: rsk_crd_gtr_label
+        # 风险分结果表
+        risk_model_scores_table: rsk_model_label
+
+        log_file: log/rsk_crd_gtr.log
+
+        # 每次执行数据的时间跨度（单位：月）
+        window_size: 1
+        # 时间步长（单位：月）
+        step_size: 1
+        # 两人入院时间时间间隔小于该值时认为同时入院（单位：秒）
+        time_interval: 900
+        # 同时就诊最小次数
+        min_count: 3
+        # 一个卡聚集团伙最小人数和最大人数
+        min_size: 5
+        max_size: 100
+        # 成对至少需涉及的医疗机构数
+        min_jg_num: 2
+        # 风险子组人数占比最小值
+        min_person_ratio_in_subgroup: 0.5
+        # 组内风险就诊人次占比最小值
+        min_risk_clinic_ratio_in_group: 0.7
+        # the resolution parameter to use.
+        # Higher resolutions lead to more smaller communities, while 
+        # lower resolutions lead to fewer larger communities.
+        resolution_parameter: 10
+        
